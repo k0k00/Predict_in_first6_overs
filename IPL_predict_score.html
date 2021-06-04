@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #iplbanner {
+            border: 2px solid black;
+            padding: 175px;
+            background: url(https://cricketaddictor.com/wp-content/uploads/2021/03/153757448_173638941016448_6980867142752435675_n.jpg);
+            background-repeat: round;
+            background-size: auto;
+        }
+
+        h1 {
+            background-color: #aa0473;
+            font-style: normal;
+            border: 2px solid black;
+            border: 2px;
+            color: white;
+            text-align: center;
+            text-shadow: black;
+
+        }
+
+        h2 {
+            font-size: 110%;
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-size-adjust: none;
+            text-align: center;
+
+        }
+
+        h4 {
+            color: black;
+            font-weight: bold;
+            font-size: large;
+        }
+
+        label {
+            text-indent: 10ch;
+            font-size: medium;
+            font-family: 'Times New Roman', Times, serif;
+            font-style: normal;
+            text-decoration: solid;
+            text-size-adjust: initial;
+            text-justify: auto;
+            text-indent: 100%;
+            font-weight: bolder;
+        }
+
+        p {
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            font-style: italic;
+            font-size: small;
+        }
+
+        .center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <div id="iplbanner"> </div> <br>
+
+    <h1>IPL Match first 6-overs score predictor</h1>
+
+    <form action="/action_page.php">
+        <fieldset>
+            <legend>
+                <h2>Enter the details :</h2>
+            </legend>
+
+            <label>1. Select Vennue : </label>
+            <select id="venue_id" name="fetchValue">
+                <option value="" selected="selected" id="venue_id">Select Venue</option>
+            </select>
+            <br><br>
+            <label>2. Innings :</label>
+            <select id="innings_id" name="fetchValue">
+                <option value="None">Select Innings</option>
+                <option value="1  ">1</option>
+                <option value="2  ">2</option>
+            </select>
+
+            <br><br>
+
+            <label>3. Batting Team:</label>
+            <select id="batting_team" name="fetchValue">
+                <option value="" selected="selected">Select batting_team</option>
+            </select>
+
+            <br><br>
+
+            <label>4. Bowling Team:</label>
+            <select name="fetchValue" id="bowling_team">
+                <option value="" selected="selected">Select bowling_team</option>
+            </select>
+            <br><br>
+
+            <label>5. Select Bats Men :</label>
+            <input type="checkbox" onchange="updateBatsMen_ddl()"><br><br>
+
+            <fieldset>
+                <legend> Select the Players who Bat in 6-Overs:</legend>
+                <label>* Batting at possition -1 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Batting at possition -2 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Batting at possition -3 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <br><br>
+                <label>* Batting at possition -4 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Batting at possition -5 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+
+
+                <label>* Batting at possition -6 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <br><br>
+                <label>* Batting at possition -7 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Batting at possition -8 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Batting at possition -9 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <br><br>
+                <label>* Batting at possition -10 : </label> <select id="batsmen" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+            </fieldset>
+
+            <br><br>
+
+            <label>6. Select Bowlers :</label>
+            <input type="checkbox" onchange="updateBowlers_ddl()"><br><br>
+            <fieldset>
+                <legend> Select Bowlers Bowl in 6-Overs :</legend>
+                <label>* Bowling in over-1 : </label> <select id="bowler" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Bowling in over-2 : </label> <select id="bowler" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Bowling in over-3 : </label> <select id="bowler" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <br><br>
+                <label>* Bowling in over-4 : </label> <select id="bowler" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Bowling in over-5 : </label> <select id="bowler" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+                <label>* Bowling in over-6 : </label> <select id="bowler" name="fetchValue">
+                    <option value="None" selected="selected">None</option>
+                </select>
+
+            </fieldset>
+
+            <br><br>
+            <p>*** All the above fields are from the history of all IPL matches till 2021 </p>
+        </fieldset>
+        <br><br><br>
+
+
+
+        <div class="center">
+            <button onclick="fetchAllValues_fron_dropDown()"><b>Predict 1<sup>st</sup> 6-Overs Score</b></button>
+        </div>
+
+        <br><br>
+    </form>
+
+    <script>
+        var venue_sel = document.getElementById("venue_id");
+        var bat_sel = document.getElementById("batting_team");
+        var bow_sel = document.getElementById("bowling_team");
+        var batsmen_sel = document.querySelectorAll("[id='batsmen']");
+        var bowlers_sel = document.querySelectorAll("[id='bowler']");
+
+        //var fetchValue_sel = document.getElementsByTagName("fetchValue_sel")//querySelectorAll("[name='fetchValue'");
+
+        var venue_Object = ['M Chinnaswamy Stadium',
+            'Punjab Cricket Association Stadium, Mohali',
+            'Feroz Shah Kotla',
+            'Eden Gardens',
+            'Wankhede Stadium',
+            'Sawai Mansingh Stadium',
+            'Rajiv Gandhi International Stadium',
+            'MA Chidambaram Stadium',
+            'Dr DY Patil Sports Academy',
+            'Newlands',
+            "St George's Park",
+            'Kingsmead',
+            'SuperSport Park',
+            'Buffalo Park',
+            'New Wanderers Stadium',
+            'De Beers Diamond Oval',
+            'OUTsurance Oval',
+            'Brabourne Stadium',
+            'Sardar Patel Stadium, Motera',
+            'Barabati Stadium',
+            'Vidarbha Cricket Association Stadium, Jamtha',
+            'Himachal Pradesh Cricket Association Stadium',
+            'Dr. Y.S. Rajasekhara Reddy ACA-VDCA Cricket Stadium',
+            'Subrata Roy Sahara Stadium',
+            'Shaheed Veer Narayan Singh International Stadium',
+            'JSCA International Stadium Complex',
+            'Sheikh Zayed Stadium',
+            'Sharjah Cricket Stadium',
+            'Dubai International Cricket Stadium',
+            'Maharashtra Cricket Association Stadium',
+            'Punjab Cricket Association Stadium',
+            'Holkar Cricket Stadium',
+            'Arun Jaitley Stadium'];
+
+        var batting_team_Object = {
+            'Chennai Super Kings': ['PA Patel', 'ML Hayden', 'MEK Hussey', 'MS Dhoni', 'SK Raina',
+                'JDP Oram', 'S Badrinath', 'SP Fleming', 'S Vidyut', 'JA Morkel',
+                'Joginder Sharma', 'MS Gony', 'M Muralitharan', 'M Ntini',
+                'S Anirudha', 'CK Kapugedera', 'L Balaji', 'A Mukund',
+                'A Flintoff', 'T Thushara', 'M Vijay', 'SB Jakati', 'GJ Bailey',
+                'R Ashwin', 'JM Kemp', 'S Tyagi', 'KB Arun Karthik',
+                'DE Bollinger', 'SB Styris', 'S Randiv', 'WP Saha', 'DJ Bravo',
+                'F du Plessis', 'RA Jadeja', 'KMDN Kulasekara', 'B Laughlin',
+                'AS Rajpoot', 'CH Morris', 'MM Sharma', 'DR Smith', 'BB McCullum',
+                'M Manhas', 'DJ Hussey', 'A Nehra', 'P Negi', 'RG More',
+                'SR Watson', 'AT Rayudu', 'KM Jadhav', 'DL Chahar', 'SN Thakur',
+                'MJ Santner', 'SW Billings', 'Harbhajan Singh', 'MA Wood',
+                'Imran Tahir', 'DR Shorey', 'SM Curran', 'RD Gaikwad',
+                'N Jagadeesan', 'MM Ali'
+            ],
+            'Delhi Capitals': ['G Gambhir', 'V Sehwag', 'S Dhawan', 'Shoaib Malik', 'MK Tiwary',
+                'KD Karthik', 'R Bhatia', 'MF Maharoof', 'VY Mahesh',
+                'AB de Villiers', 'PJ Sangwan', 'Mohammad Asif', 'GD McGrath',
+                'TM Dilshan', 'A Mishra', 'M Manhas', 'DL Vettori', 'DA Warner',
+                'A Nehra', 'AB McDonald', 'Y Nagar', 'S Ladda', 'DP Nannes',
+                'MC Henriques', 'UT Yadav', 'KM Jadhav', 'PD Collingwood',
+                'UBT Chand', 'AJ Finch', 'NV Ojha', 'Y Venugopal Rao', 'IK Pathan',
+                'RE van der Merwe', 'M Morkel', 'AB Dinda', 'JR Hopes', 'MS Wade',
+                'TR Birt', 'CA Ingram', 'AB Agarkar', 'S Nadeem', 'S Sriram',
+                'VR Aaron', 'GJ Maxwell', 'DAJ Bracewell', 'KP Pietersen',
+                'DPMD Jayawardene', 'LRPL Taylor', 'AD Russell', 'P Negi',
+                'Sunny Gupta', 'MC Juneja', 'J Botha', 'BMAJ Mendis', 'BJ Rohrer',
+                'CM Gautam', 'S Kaul', 'MA Agarwal', 'M Vijay', 'JP Duminy',
+                'JDS Neesham', 'Mohammed Shami', 'JD Unadkat', 'Q de Kock',
+                'LR Shukla', 'R Shukla', 'Imran Tahir', 'WD Parnell', 'SS Iyer',
+                'Yuvraj Singh', 'AD Mathews', 'NM Coulter-Nile', 'JA Morkel',
+                'DJ Muthuswami', 'SS Tiwary', 'KK Nair', 'SV Samson',
+                'CR Brathwaite', 'CH Morris', 'Z Khan', 'SW Billings', 'RR Pant',
+                'J Yadav', 'AP Tare', 'PJ Cummins', 'CJ Anderson', 'K Rabada',
+                'AR Bawne', 'MN Samuels', 'PP Shaw', 'KMA Paul', 'AR Patel',
+                'R Tewatia', 'GH Vihari', 'HV Patel', 'Avesh Khan', 'S Lamichhane',
+                'C Munro', 'V Shankar', 'DT Christian', 'JJ Roy', 'TA Boult',
+                'LE Plunkett', 'Abhishek Sharma', 'SE Rutherford', 'J Suchith',
+                'I Sharma', 'SO Hetmyer', 'MP Stoinis', 'R Ashwin', 'A Nortje',
+                'AM Rahane', 'AT Carey', 'TU Deshpande', 'P Dubey', 'DR Sams'
+            ],
+            'Kings XI Punjab': ['K Goel', 'JR Hopes', 'KC Sangakkara', 'Yuvraj Singh', 'SM Katich',
+                'IK Pathan', 'DPMD Jayawardene', 'S Sohal', 'B Lee', 'PP Chawla',
+                'WA Mota', 'RR Sarwan', 'S Sreesanth', 'VRV Singh',
+                'TM Srivastava', 'SE Marsh', 'U Kaul', 'LA Pomersbach', 'RR Powar',
+                'RS Bopara', 'T Kohli', 'MS Bisla', 'M Kaif', 'YA Abdulla',
+                'AB Barath', 'Bipul Sharma', 'J Theron', 'SJ Srivastava',
+                'VS Malik', 'RS Sodhi', 'PC Valthaty', 'AC Gilchrist',
+                'Sunny Singh', 'AM Nayar', 'KD Karthik', 'R McLaren', 'DJ Hussey',
+                'RJ Harris', 'P Kumar', 'L Ablish', 'Mandeep Singh', 'BA Bhatt',
+                'JP Faulkner', 'Harmeet Singh', 'P Dogra', 'AD Mascarenhas',
+                'N Saini', 'DA Miller', 'Azhar Mahmood', 'Gurkeerat Singh',
+                'SD Chitnis', 'P Awana', 'M Vohra', 'R Sathish', 'MS Gony',
+                'Sandeep Sharma', 'CA Pujara', 'V Sehwag', 'GJ Maxwell',
+                'AR Patel', 'GJ Bailey', 'WP Saha', 'MG Johnson', 'R Dhawan',
+                'L Balaji', 'Shivam Sharma', 'BE Hendricks', 'Karanveer Singh',
+                'M Vijay', 'NLTC Perera', 'Anureet Singh', 'SN Thakur',
+                'MM Sharma', 'P Sahu', 'KJ Abbott', 'NS Naik', 'MP Stoinis',
+                'Swapnil Singh', 'HM Amla', 'F Behardien', 'KC Cariappa',
+                'VR Aaron', 'EJG Morgan', 'I Sharma', 'MJ Guptill', 'R Tewatia',
+                'KL Rahul', 'MA Agarwal', 'CH Gayle', 'SN Khan', 'N Pooran',
+                'SM Curran', 'GC Viljoen', 'R Ashwin', 'M Ashwin',
+                'Mohammed Shami', 'KK Nair', 'Mujeeb Ur Rahman', 'AJ Finch',
+                'AJ Tye', 'BB Sran', 'MK Tiwary', 'AS Rajpoot', 'AD Nath',
+                'Harpreet Brar', 'P Simran Singh', 'K Gowtham', 'CJ Jordan',
+                'JDS Neesham', 'Ravi Bishnoi', 'SS Cottrell', 'Arshdeep Singh',
+                'DJ Hooda'
+            ],
+            'Kolkata Knight Riders': ['SC Ganguly', 'BB McCullum', 'RT Ponting', 'DJ Hussey',
+                'Mohammad Hafeez', 'WP Saha', 'LR Shukla', 'AB Agarkar',
+                'M Kartik', 'I Sharma', 'DB Das', 'Salman Butt', 'BJ Hodge',
+                'Umar Gul', 'AB Dinda', 'A Chopra', 'T Taibu', 'Iqbal Abdulla',
+                'Shoaib Akhtar', 'CH Gayle', 'MC Henriques', 'SB Bangar',
+                'Yashpal Singh', 'AN Ghosh', 'BAW Mendis', 'MN van Wyk',
+                'AD Mathews', 'Mashrafe Mortaza', 'SS Shaikh', 'MK Tiwary',
+                'CA Pujara', 'OA Shah', 'RS Gavaskar', 'SE Bond', 'Mandeep Singh',
+                'CK Langeveldt', 'MS Bisla', 'JH Kallis', 'YK Pathan',
+                'EJG Morgan', 'G Gambhir', 'R Bhatia', 'BJ Haddin', 'SP Goswami',
+                'RN ten Doeschate', 'B Lee', 'L Balaji', 'MV Boucher',
+                'Shakib Al Hasan', 'SP Narine', 'Mohammed Shami', 'R McLaren',
+                'PJ Sangwan', 'SMSM Senanayake', 'S Narwal', 'P Dogra',
+                'MK Pandey', 'RV Uthappa', 'SA Yadav', 'CA Lynn', 'R Vinay Kumar',
+                'PP Chawla', 'UT Yadav', 'M Morkel', 'AD Russell', 'PJ Cummins',
+                'GB Hogg', 'J Botha', 'Azhar Mahmood', 'C Munro', 'R Sathish',
+                'JO Holder', 'CR Woakes', 'C de Grandhomme', 'NM Coulter-Nile',
+                'Kuldeep Yadav', 'SP Jackson', 'TA Boult', 'IR Jaggi',
+                'AS Rajpoot', 'N Rana', 'KD Karthik', 'Shubman Gill', 'NS Naik',
+                'M Prasidh Krishna', 'HF Gurney', 'JL Denly', 'CR Brathwaite',
+                'RK Singh', 'TK Curran', 'Shivam Mavi', 'MG Johnson',
+                'JPR Scantlebury-Searles', 'Y Prithvi Raj', 'KC Cariappa',
+                'KL Nagarkoti', 'RA Tripathi', 'CV Varun', 'T Banton',
+                'LH Ferguson'
+            ],
+            'Mumbai Indians': ['L Ronchi', 'ST Jayasuriya', 'DJ Thornely', 'RV Uthappa',
+                'PR Shah', 'AM Nayar', 'SM Pollock', 'Harbhajan Singh', 'DJ Bravo',
+                'MA Khote', 'A Nehra', 'SS Tiwary', 'DS Kulkarni', 'AM Rahane',
+                'MK Pandey', 'YV Takawale', 'RR Raje', 'SR Tendulkar', 'DR Smith',
+                'SD Chitnis', 'CRD Fernando', 'VS Yeligati', 'S Dhawan',
+                'JP Duminy', 'Z Khan', 'GR Napier', 'C Nanda', 'SL Malinga',
+                'Mohammad Ashraful', 'AP Tare', 'AT Rayudu', 'R Sathish',
+                'R McLaren', 'KA Pollard', 'AN Ahmed', 'C Madan', 'STR Binny',
+                'DJ Jacobs', 'RG Sharma', 'A Symonds', 'AG Murtaza', 'AC Blizzard',
+                'TL Suman', 'MM Patel', 'JEC Franklin', 'RE Levi', 'KD Karthik',
+                'CJ McKay', 'RP Singh', 'PP Ojha', 'NLTC Perera', 'RJ Peterson',
+                'HH Gibbs', 'RT Ponting', 'R Dhawan', 'MG Johnson', 'GJ Maxwell',
+                'NM Coulter-Nile', 'MEK Hussey', 'CJ Anderson', 'CM Gautam',
+                'JJ Bumrah', 'BR Dunk', 'LMP Simmons', 'S Gopal', 'M de Lange',
+                'P Kumar', 'PA Patel', 'UBT Chand', 'HH Pandya', 'MJ McClenaghan',
+                'AJ Finch', 'J Suchith', 'R Vinay Kumar', 'JC Buttler',
+                'MJ Guptill', 'KH Pandya', 'TG Southee', 'N Rana', 'KV Sharma',
+                'Q de Kock', 'SA Yadav', 'Yuvraj Singh', 'BCJ Cutting',
+                'Rasikh Salam', 'M Markande', 'Ishan Kishan', 'RD Chahar',
+                'SD Lad', 'AS Joseph', 'E Lewis', 'PJ Sangwan', 'A Dananjaya',
+                'Mustafizur Rahman', 'BB Sran', 'JL Pattinson', 'TA Boult',
+                'CA Lynn', 'M Jansen'
+            ],
+            'Rajasthan Royals': ['T Kohli', 'YK Pathan', 'SR Watson', 'M Kaif', 'DS Lehmann',
+                'RA Jadeja', 'M Rawat', 'D Salunkhe', 'SK Warne', 'SK Trivedi',
+                'Kamran Akmal', 'GC Smith', 'Pankaj Singh', 'SA Asnodkar',
+                'Sohail Tanvir', 'MM Patel', 'AD Mascarenhas', 'Niraj Patel',
+                'Younis Khan', 'T Henderson', 'Kamran Khan', 'PC Valthaty',
+                'RJ Quiney', 'AS Raut', 'LA Carseldine', 'NV Ojha', 'SM Harwood',
+                'M Morkel', 'SD Chitnis', 'J Botha', 'A Singh', 'AA Jhunjhunwala',
+                'P Dogra', 'A Uniyal', 'MJ Lumb', 'DR Martyn', 'S Narwal',
+                'FY Fazal', 'AC Voges', 'SW Tait', 'AP Dole', 'AG Paunikar',
+                'AJ Finch', 'R Dravid', 'LRPL Taylor', 'AL Menaria', 'AM Rahane',
+                'STR Binny', 'DH Yagnik', 'BJ Hodge', 'OA Shah', 'KK Cooper',
+                'SP Goswami', 'AA Chavan', 'GB Hogg', 'A Chandila', 'MDKJ Perera',
+                'R Shukla', 'S Sreesanth', 'SV Samson', 'JP Faulkner',
+                'Sachin Baby', 'PV Tambe', 'AM Nayar', 'R Bhatia', 'SPD Smith',
+                'TG Southee', 'DS Kulkarni', 'KK Nair', 'KW Richardson',
+                'Ankit Sharma', 'BCJ Cutting', 'UBT Chand', 'R Tewatia',
+                'VS Malik', 'DJ Hooda', 'CH Morris', 'J Theron', 'JC Buttler',
+                'RA Tripathi', 'BA Stokes', 'K Gowtham', 'JC Archer', 'JD Unadkat',
+                'S Gopal', 'R Parag', 'LS Livingstone', 'AJ Turner', 'DJM Short',
+                'B Laughlin', 'H Klaasen', 'MK Lomror', 'P Chopra', 'IS Sodhi',
+                'Anureet Singh', 'VR Aaron', 'YBK Jaiswal', 'RV Uthappa',
+                'TK Curran', 'AS Rajpoot', 'AJ Tye', 'Kartik Tyagi'
+            ],
+            'Royal Challengers Bangalore': ['R Dravid', 'W Jaffer', 'V Kohli', 'JH Kallis', 'CL White',
+                'MV Boucher', 'B Akhil', 'AA Noffke', 'P Kumar', 'Z Khan',
+                'SB Joshi', 'S Chanderpaul', 'LRPL Taylor', 'R Vinay Kumar',
+                'B Chipli', 'DW Steyn', 'Misbah-ul-Haq', 'DT Patil', 'A Kumble',
+                'J Arunkumar', 'Abdur Razzak', 'SP Goswami', 'JD Ryder',
+                'KP Pietersen', 'RV Uthappa', 'R Bishnoi', 'KV Sharma',
+                'Pankaj Singh', 'RE van der Merwe', 'MK Pandey', 'KP Appanna',
+                'D du Preez', 'EJG Morgan', 'A Mithun', 'S Sriram', 'MA Agarwal',
+                'TM Dilshan', 'AB de Villiers', 'AUK Pathan', 'SS Tiwary',
+                'CA Pujara', 'JJ van der Wath', 'R Ninan', 'DL Vettori',
+                'S Aravind', 'CH Gayle', 'J Syed Mohammad', 'M Kaif',
+                'LA Pomersbach', 'KB Arun Karthik', 'CK Langeveldt', 'AB McDonald',
+                'HV Patel', 'RR Bhatkal', 'M Muralitharan', 'P Parameswaran',
+                'DT Christian', 'KK Nair', 'MC Henriques', 'M Kartik',
+                'JD Unadkat', 'R Rampaul', 'KL Rahul', 'A Mukund', 'PA Patel',
+                'NJ Maddinson', 'Yuvraj Singh', 'YV Takawale', 'JA Morkel',
+                'S Rana', 'MA Starc', 'AB Dinda', 'VR Aaron', 'RR Rossouw',
+                'YS Chahal', 'VH Zol', 'AN Ahmed', 'MS Bisla', 'KD Karthik',
+                'D Wiese', 'Iqbal Abdulla', 'SN Khan', 'Mandeep Singh',
+                'DJG Sammy', 'SA Abbott', 'SR Watson', 'KM Jadhav', 'TM Head',
+                'STR Binny', 'KW Richardson', 'Sachin Baby', 'Parvez Rasool',
+                'CJ Jordan', 'TS Mills', 'A Choudhary', 'Vishnu Vinod', 'P Negi',
+                'S Badree', 'AF Milne', 'MM Ali', 'SO Hetmyer', 'S Dube',
+                'C de Grandhomme', 'NA Saini', 'UT Yadav', 'Mohammed Siraj',
+                'P Ray Barman', 'MP Stoinis', 'AD Nath', 'TG Southee',
+                'BB McCullum', 'Q de Kock', 'CR Woakes', 'Washington Sundar',
+                'CJ Anderson', 'M Vohra', 'M Ashwin', 'H Klaasen',
+                'Gurkeerat Singh', 'D Padikkal', 'AJ Finch', 'JR Philippe',
+                'I Udana', 'CH Morris', 'Shahbaz Ahmed', 'RM Patidar',
+                'GJ Maxwell', 'KA Jamieson'
+            ],
+            'Sunrisers Hyderabad': ['AC Gilchrist', 'Y Venugopal Rao', 'VVS Laxman', 'A Symonds',
+                'RG Sharma', 'SB Styris', 'AS Yadav', 'SB Bangar', 'WPUJC Vaas',
+                'RP Singh', 'Shahid Afridi', 'HH Gibbs', 'DNT Zoysa',
+                'D Kalyankrishna', 'DB Ravi Teja', 'PP Ojha', 'PM Sarvesh Kumar',
+                'DP Vijaykumar', 'LPC Silva', 'H Das', 'FH Edwards', 'DR Smith',
+                'AA Bilakhia', 'TL Suman', 'Shoaib Ahmed', 'RJ Harris',
+                'Anirudh Singh', 'Jaskaran Singh', 'MD Mishra', 'R Sharma',
+                'KAJ Roach', 'B Sumanth', 'MR Marsh', 'Harmeet Singh', 'S Dhawan',
+                'IR Jaggi', 'KC Sangakkara', 'B Chipli', 'JP Duminy',
+                'DT Christian', 'DW Steyn', 'A Mishra', 'I Sharma', 'S Sohal',
+                'MS Gony', 'CL White', 'I Malhotra', 'MJ Lumb', 'DJ Harris',
+                'PA Patel', 'Ankit Sharma', 'AA Jhunjhunwala', 'A Ashish Reddy',
+                'V Pratap Singh', 'PA Reddy', 'J Theron', 'CA Lynn', 'GH Vihari',
+                'NLTC Perera', 'BB Samantray', 'KV Sharma', 'Q de Kock',
+                'X Thalaivan Sargunam', 'DJG Sammy', 'AJ Finch', 'DA Warner',
+                'KL Rahul', 'IK Pathan', 'B Kumar', 'NV Ojha', 'MC Henriques',
+                'S Anirudha', 'JO Holder', 'RS Bopara', 'KS Williamson',
+                'Parvez Rasool', 'EJG Morgan', 'P Kumar', 'Bipul Sharma',
+                'DJ Hooda', 'AP Tare', 'Yuvraj Singh', 'BB Sran', 'A Nehra',
+                'BCJ Cutting', 'V Shankar', 'Rashid Khan', 'Mohammad Nabi',
+                'CJ Jordan', 'JM Bairstow', 'YK Pathan', 'MK Pandey',
+                'Sandeep Sharma', 'S Kaul', 'RK Bhui', 'Abhishek Sharma',
+                'KK Ahmed', 'WP Saha', 'Shakib Al Hasan', 'B Stanlake',
+                'Basil Thampi', 'AD Hales', 'SP Goswami', 'CR Brathwaite',
+                'MJ Guptill', 'PK Garg', 'T Natarajan', 'Abdul Samad', 'S Nadeem'
+            ]
+        };
+        var bowling_team_Object = {
+            'Chennai Super Kings': ['JDP Oram', 'MS Gony', 'M Muralitharan', 'P Amarnath',
+                'Joginder Sharma', 'JA Morkel', 'M Ntini', 'SK Raina', 'S Vidyut',
+                'L Balaji', 'CK Kapugedera', 'T Thushara', 'A Flintoff', 'S Tyagi',
+                'SB Jakati', 'R Ashwin', 'JM Kemp', 'NLTC Perera', 'C Ganapathy',
+                'DE Bollinger', 'TG Southee', 'S Randiv', 'SB Styris', 'DJ Bravo',
+                'RA Jadeja', 'F du Plessis', 'KMDN Kulasekara', 'VY Mahesh',
+                'BW Hilfenhaus', 'DP Nannes', 'AS Rajpoot', 'B Laughlin',
+                'CH Morris', 'MM Sharma', 'JO Holder', 'A Nehra', 'P Negi',
+                'DR Smith', 'IC Pandey', 'S Badree', 'V Shankar', 'DJ Hussey',
+                'JW Hastings', 'RG More', 'DL Chahar', 'Harbhajan Singh',
+                'Imran Tahir', 'SN Thakur', 'MJ Santner', 'SC Kuggeleijn',
+                'KV Sharma', 'SR Watson', 'MA Wood', 'L Ngidi', 'KM Asif',
+                'DJ Willey', 'SM Curran', 'PP Chawla', 'JR Hazlewood',
+                'Monu Kumar', 'MM Ali'],
+            'Delhi Capitals': ['GD McGrath', 'B Geeves', 'MF Maharoof', 'R Bhatia', 'DL Vettori',
+                'Mohammad Asif', 'VY Mahesh', 'Shoaib Malik', 'V Sehwag',
+                'PJ Sangwan', 'A Mishra', 'TM Dilshan', 'DP Nannes', 'AM Salvi',
+                'A Nehra', 'MK Tiwary', 'AB McDonald', 'Y Nagar', 'S Ladda',
+                'UT Yadav', 'MC Henriques', 'PD Collingwood', 'AB Dinda',
+                'M Morkel', 'IK Pathan', 'RE van der Merwe', 'AJ Finch',
+                'S Nadeem', 'JR Hopes', 'VR Aaron', 'AB Agarkar',
+                'Y Venugopal Rao', 'S Sriram', 'GJ Maxwell', 'DAJ Bracewell',
+                'KP Pietersen', 'P Negi', 'AD Russell', 'Sunny Gupta', 'J Botha',
+                'BMAJ Mendis', 'S Kaul', 'BJ Rohrer', 'JP Duminy',
+                'Mohammed Shami', 'WD Parnell', 'R Sharma', 'JDS Neesham',
+                'NM Coulter-Nile', 'JD Unadkat', 'M Vijay', 'LR Shukla',
+                'Imran Tahir', 'R Shukla', 'DJ Muthuswami', 'AD Mathews',
+                'JA Morkel', 'Yuvraj Singh', 'Z Khan', 'GS Sandhu', 'J Yadav',
+                'CH Morris', 'CR Brathwaite', 'PJ Cummins', 'CJ Anderson',
+                'K Rabada', 'TA Boult', 'I Sharma', 'R Tewatia', 'KMA Paul',
+                'AR Patel', 'S Lamichhane', 'HV Patel', 'Avesh Khan', 'GH Vihari',
+                'DT Christian', 'V Shankar', 'LE Plunkett', 'CJ Dala',
+                'SE Rutherford', 'J Suchith', 'A Nortje', 'MM Sharma', 'R Ashwin',
+                'MP Stoinis', 'TU Deshpande', 'DR Sams', 'P Dubey', 'CR Woakes',
+                'TK Curran'],
+            'Kings XI Punjab': ['B Lee', 'S Sreesanth', 'JR Hopes', 'IK Pathan', 'K Goel',
+                'PP Chawla', 'WA Mota', 'VRV Singh', 'Yuvraj Singh',
+                'Gagandeep Singh', 'RR Powar', 'YA Abdulla', 'VS Malik',
+                'RS Bopara', 'RR Bose', 'Bipul Sharma', 'SJ Srivastava',
+                'J Theron', 'L Ablish', 'P Kumar', 'RJ Harris', 'R McLaren',
+                'AM Nayar', 'BA Bhatt', 'PC Valthaty', 'DJ Hussey', 'JP Faulkner',
+                'Harmeet Singh', 'AD Mascarenhas', 'P Awana', 'Azhar Mahmood',
+                'R Sathish', 'MS Gony', 'MG Neser', 'Sandeep Sharma',
+                'AC Gilchrist', 'AR Patel', 'MG Johnson', 'L Balaji', 'R Dhawan',
+                'GJ Maxwell', 'M Kartik', 'Shivam Sharma', 'BE Hendricks',
+                'Karanveer Singh', 'Anureet Singh', 'NLTC Perera', 'M Vijay',
+                'SN Thakur', 'Gurkeerat Singh', 'MM Sharma', 'P Sahu', 'KJ Abbott',
+                'MP Stoinis', 'Swapnil Singh', 'KC Cariappa', 'VR Aaron',
+                'T Natarajan', 'I Sharma', 'MJ Henry', 'R Tewatia', 'SM Curran',
+                'Mujeeb Ur Rahman', 'Mohammed Shami', 'R Ashwin', 'AS Rajpoot',
+                'CV Varun', 'GC Viljoen', 'AJ Tye', 'Mandeep Singh', 'M Ashwin',
+                'SN Khan', 'Arshdeep Singh', 'BB Sran', 'MK Tiwary',
+                'Harpreet Brar', 'SS Cottrell', 'CJ Jordan', 'K Gowtham',
+                'Ravi Bishnoi', 'JDS Neesham', 'DJ Hooda', 'CH Gayle'],
+
+            'Kolkata Knight Riders': ['AB Dinda', 'I Sharma', 'AB Agarkar', 'SC Ganguly', 'LR Shukla',
+                'M Kartik', 'Mohammad Hafeez', 'DJ Hussey', 'Umar Gul',
+                'Shoaib Akhtar', 'Iqbal Abdulla', 'BAW Mendis', 'CH Gayle',
+                'MC Henriques', 'Anureet Singh', 'BJ Hodge', 'SS Sarkar',
+                'AD Mathews', 'Mashrafe Mortaza', 'CK Langeveldt', 'RS Gavaskar',
+                'SE Bond', 'MB Parmar', 'JD Unadkat', 'MK Tiwary', 'YK Pathan',
+                'L Balaji', 'JH Kallis', 'S Ladda', 'R Bhatia', 'RN ten Doeschate',
+                'B Lee', 'Shakib Al Hasan', 'M de Lange', 'SP Narine',
+                'PJ Sangwan', 'Mohammed Shami', 'R McLaren', 'SMSM Senanayake',
+                'S Narwal', 'R Vinay Kumar', 'M Morkel', 'PP Chawla', 'UT Yadav',
+                'AD Russell', 'SA Yadav', 'PJ Cummins', 'J Botha', 'KC Cariappa',
+                'GB Hogg', 'Azhar Mahmood', 'JW Hastings', 'C Munro',
+                'Kuldeep Yadav', 'R Sathish', 'JO Holder', 'AS Rajpoot',
+                'TA Boult', 'CR Woakes', 'C de Grandhomme', 'NM Coulter-Nile',
+                'M Prasidh Krishna', 'LH Ferguson', 'N Rana', 'HF Gurney',
+                'CR Brathwaite', 'MG Johnson', 'TK Curran', 'Shivam Mavi',
+                'JPR Scantlebury-Searles', 'Y Prithvi Raj', 'S Sandeep Warrier',
+                'CV Varun', 'KL Nagarkoti', 'CJ Green', 'Harbhajan Singh'],
+
+            'Mumbai Indians': ['A Nehra', 'SM Pollock', 'DS Kulkarni', 'ST Jayasuriya',
+                'Harbhajan Singh', 'AM Nayar', 'DJ Bravo', 'VS Yeligati',
+                'MA Khote', 'SD Chitnis', 'CRD Fernando', 'DJ Thornely', 'RR Raje',
+                'DR Smith', 'A Nel', 'SL Malinga', 'Z Khan', 'SR Tendulkar',
+                'JP Duminy', 'GR Napier', 'C Nanda', 'AM Rahane', 'RA Shaikh',
+                'R McLaren', 'AG Murtaza', 'R Sathish', 'KA Pollard', 'AN Ahmed',
+                'STR Binny', 'MM Patel', 'JEC Franklin', 'RG Sharma', 'TL Suman',
+                'A Symonds', 'RW Price', 'PP Ojha', 'RP Singh', 'CJ McKay',
+                'NLTC Perera', 'RJ Peterson', 'R Shukla', 'MG Johnson',
+                'JJ Bumrah', 'JDP Oram', 'R Dhawan', 'YS Chahal', 'P Suyal',
+                'NM Coulter-Nile', 'GJ Maxwell', 'CJ Anderson', 'P Kumar',
+                'LMP Simmons', 'K Santokie', 'S Gopal', 'M de Lange',
+                'MJ McClenaghan', 'HH Pandya', 'R Vinay Kumar', 'J Suchith',
+                'TG Southee', 'KH Pandya', 'N Rana', 'KV Sharma', 'Rasikh Salam',
+                'BCJ Cutting', 'M Markande', 'JP Behrendorff', 'RD Chahar',
+                'AS Joseph', 'Mustafizur Rahman', 'PJ Sangwan', 'A Dananjaya',
+                'J Yadav', 'AS Roy', 'BB Sran', 'TA Boult', 'JL Pattinson',
+                'M Jansen'],
+            'Rajasthan Royals': ['MM Patel', 'SR Watson', 'SK Trivedi', 'SK Warne', 'YK Pathan',
+                'D Salunkhe', 'Pankaj Singh', 'Sohail Tanvir', 'AD Mascarenhas',
+                'RA Jadeja', 'Kamran Khan', 'T Henderson', 'SM Harwood', 'AS Raut',
+                'A Singh', 'M Morkel', 'LA Carseldine', 'J Botha', 'SW Tait',
+                'A Uniyal', 'AA Jhunjhunwala', 'S Narwal', 'AC Voges', 'SB Wagh',
+                'AP Dole', 'FY Fazal', 'AJ Finch', 'JDP Oram', 'AL Menaria',
+                'STR Binny', 'ND Doshi', 'LRPL Taylor', 'AA Chavan', 'KK Cooper',
+                'BJ Hodge', 'GB Hogg', 'A Chandila', 'S Badree', 'S Sreesanth',
+                'R Shukla', 'JP Faulkner', 'PV Tambe', 'VS Malik', 'DS Kulkarni',
+                'KW Richardson', 'R Bhatia', 'TG Southee', 'Iqbal Abdulla',
+                'R Tewatia', 'Ankit Sharma', 'BCJ Cutting', 'CH Morris',
+                'DJ Hooda', 'J Theron', 'BB Sran', 'K Gowtham', 'JC Archer',
+                'BA Stokes', 'JD Unadkat', 'S Gopal', 'VR Aaron', 'S Midhun',
+                'R Parag', 'LS Livingstone', 'IS Sodhi', 'B Laughlin', 'DJM Short',
+                'MK Lomror', 'Anureet Singh', 'O Thomas', 'TK Curran',
+                'AS Rajpoot', 'Kartik Tyagi', 'AJ Tye'],
+            'Royal Challengers Bangalore': ['P Kumar', 'Z Khan', 'AA Noffke', 'JH Kallis', 'SB Joshi',
+                'CL White', 'R Vinay Kumar', 'B Akhil', 'A Kumble', 'DW Steyn',
+                'V Kohli', 'Abdur Razzak', 'JD Ryder', 'KP Pietersen',
+                'LRPL Taylor', 'Pankaj Singh', 'KP Appanna', 'RE van der Merwe',
+                'D du Preez', 'A Mithun', 'S Sriram', 'ND Doshi', 'DL Vettori',
+                'DP Nannes', 'TM Dilshan', 'AUK Pathan', 'JJ van der Wath',
+                'S Aravind', 'R Ninan', 'J Syed Mohammad', 'CH Gayle',
+                'CK Langeveldt', 'AA Kazi', 'AB McDonald', 'M Muralitharan',
+                'HV Patel', 'RR Bhatkal', 'P Parameswaran', 'JD Unadkat',
+                'DT Christian', 'M Kartik', 'MC Henriques', 'RP Singh',
+                'R Rampaul', 'MA Starc', 'JA Morkel', 'VR Aaron', 'YS Chahal',
+                'AB Dinda', 'Yuvraj Singh', 'AN Ahmed', 'S Rana', 'SB Jakati',
+                'Iqbal Abdulla', 'D Wiese', 'SA Abbott', 'DJG Sammy', 'AF Milne',
+                'SR Watson', 'Parvez Rasool', 'KW Richardson', 'STR Binny',
+                'T Shamsi', 'CJ Jordan', 'Sachin Baby', 'TS Mills', 'A Choudhary',
+                'TM Head', 'B Stanlake', 'P Negi', 'S Badree', 'Avesh Khan',
+                'NA Saini', 'MM Ali', 'UT Yadav', 'Mohammed Siraj', 'S Dube',
+                'C de Grandhomme', 'P Ray Barman', 'MP Stoinis', 'TG Southee',
+                'CR Woakes', 'Washington Sundar', 'K Khejroliya', 'CJ Anderson',
+                'M Ashwin', 'I Udana', 'A Zampa', 'CH Morris', 'Shahbaz Ahmed',
+                'KA Jamieson'],
+            'Sunrisers Hyderabad': ['WPUJC Vaas', 'RP Singh', 'SB Styris', 'SB Bangar', 'A Symonds',
+                'PP Ojha', 'Shahid Afridi', 'D Kalyankrishna', 'DNT Zoysa',
+                'Y Venugopal Rao', 'DP Vijaykumar', 'PM Sarvesh Kumar',
+                'RG Sharma', 'DB Ravi Teja', 'LPC Silva', 'FH Edwards',
+                'Harmeet Singh', 'DR Smith', 'Shoaib Ahmed', 'RJ Harris',
+                'TL Suman', 'Jaskaran Singh', 'R Sharma', 'KAJ Roach', 'MR Marsh',
+                'DW Steyn', 'I Sharma', 'DT Christian', 'A Mishra', 'JP Duminy',
+                'MS Gony', 'S Dhawan', 'I Malhotra', 'B Chipli', 'Anand Rajan',
+                'Ankit Sharma', 'DJ Harris', 'TP Sudhindra', 'CL White',
+                'V Pratap Singh', 'A Ashish Reddy', 'AA Jhunjhunwala', 'J Theron',
+                'GH Vihari', 'NLTC Perera', 'KV Sharma', 'DJG Sammy', 'B Kumar',
+                'IK Pathan', 'MC Henriques', 'Parvez Rasool', 'JO Holder',
+                'P Kumar', 'Bipul Sharma', 'RS Bopara', 'TA Boult', 'A Nehra',
+                'Mustafizur Rahman', 'BB Sran', 'DJ Hooda', 'Yuvraj Singh',
+                'BCJ Cutting', 'KS Williamson', 'Rashid Khan', 'S Kaul',
+                'Mohammad Nabi', 'Mohammed Siraj', 'CJ Jordan', 'Shakib Al Hasan',
+                'Sandeep Sharma', 'S Nadeem', 'V Shankar', 'YK Pathan', 'KK Ahmed',
+                'Abhishek Sharma', 'B Stanlake', 'Basil Thampi', 'CR Brathwaite',
+                'T Natarajan', 'Abdul Samad', 'DA Warner']
+        };
+
+        window.onload = function () {
+            load_venue();
+            load_teams();
+        }
+
+        function load_venue() {
+            for (let x in venue_Object) {
+                //console.log(x);
+                venue_sel.options[venue_sel.options.length] = new Option(venue_Object[x], venue_Object[x])
+            }
+        }
+        function load_teams() {
+            for (let x in batting_team_Object) {
+                bat_sel.options[bat_sel.options.length] = new Option(x, x);
+            }
+            for (let x in bowling_team_Object) {
+                bow_sel.options[bow_sel.options.length] = new Option(x, x);
+            }
+        }
+
+        function updateBatsMen_ddl() {
+            var selected_bat_team = bat_sel.options[bat_sel.selectedIndex].value;
+            console.log(selected_bat_team);
+            for (let i = 0; i < batsmen_sel.length; i++) {
+                console.log(batsmen_sel[i])
+                for (let x in batting_team_Object[selected_bat_team]) {
+                    batsmen_sel[i].options[batsmen_sel[i].options.length] = new Option(batting_team_Object[selected_bat_team][x], batting_team_Object[selected_bat_team][x])
+                }
+
+            }
+        }
+
+        function updateBowlers_ddl() {
+            var selected_bow_team = bow_sel.options[bow_sel.selectedIndex].value;
+            console.log(selected_bow_team);
+            for (let i = 0; i < bowlers_sel.length; i++) {
+                //console.log(bowlers_sel[i])
+                for (let x in bowling_team_Object[selected_bow_team]) {
+                    bowlers_sel[i].options[bowlers_sel[i].options.length] = new Option(bowling_team_Object[selected_bow_team][x], bowling_team_Object[selected_bow_team][x])
+                }
+
+            }
+
+        }
+        /*
+        function fetchAllValues_fron_dropDown() {
+            
+            var consolidated_input = []
+            //{venue : 0,innings: 0,batting_team: 0,bowling_team: 0,bat1: 0,bat2: 0,bat3: 0,bat4: 0,bat5: 0,bat6: 0,bat7: 0,bat8: 0,bat9: 0,bat10: 0,bow1: 0,bow2: 0,bow3: 0,bow4: 0,bow5: 0,bow6: 0,Total_score: 0};
+            for (let i=0;i<fetchValue_sel.length+1;i++) {
+                consolidated_input[i] = fetchValue_sel[i].value
+            }
+            console.log(consolidated_input);
+
+        }
+        */
+
+
+    </script>
+
+</body>
+
+</html>
