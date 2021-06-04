@@ -78,7 +78,7 @@
 
     <h1>IPL Match first 6-overs score predictor</h1>
 
-    <form action="/action_page.php">
+    <form>
         <fieldset>
             <legend>
                 <h2>Enter the details :</h2>
@@ -86,7 +86,7 @@
 
             <label>1. Select Vennue : </label>
             <select id="venue_id" name="fetchValue">
-                <option value="" selected="selected" id="venue_id">Select Venue</option>
+                <option value="None" selected="selected" id="venue_id">Select Venue</option>
             </select>
             <br><br>
             <label>2. Innings :</label>
@@ -100,14 +100,14 @@
 
             <label>3. Batting Team:</label>
             <select id="batting_team" name="fetchValue">
-                <option value="" selected="selected">Select batting_team</option>
+                <option value="None" selected="selected">Select batting_team</option>
             </select>
 
             <br><br>
 
             <label>4. Bowling Team:</label>
             <select name="fetchValue" id="bowling_team">
-                <option value="" selected="selected">Select bowling_team</option>
+                <option value="None" selected="selected">Select bowling_team</option>
             </select>
             <br><br>
 
@@ -189,10 +189,15 @@
 
 
         <div class="center">
-            <button onclick="fetchAllValues_fron_dropDown()"><b>Predict 1<sup>st</sup> 6-Overs Score</b></button>
+            <button id="btn"><b>Predict 1<sup>st</sup> 6-Overs Score</b></button>
+        </div>
+        <br>
+        <div class="center">
+            <input type="reset">
         </div>
 
-        <br><br>
+
+
     </form>
 
     <script>
@@ -202,7 +207,9 @@
         var batsmen_sel = document.querySelectorAll("[id='batsmen']");
         var bowlers_sel = document.querySelectorAll("[id='bowler']");
 
-        //var fetchValue_sel = document.getElementsByTagName("fetchValue_sel")//querySelectorAll("[name='fetchValue'");
+        var btn = document.getElementById('btn');
+        var fetchValue_sel = document.getElementsByName("fetchValue");
+
 
         var venue_Object = ['M Chinnaswamy Stadium',
             'Punjab Cricket Association Stadium, Mohali',
@@ -587,6 +594,7 @@
                 'T Natarajan', 'Abdul Samad', 'DA Warner']
         };
 
+
         window.onload = function () {
             load_venue();
             load_teams();
@@ -631,18 +639,17 @@
             }
 
         }
-        /*
-        function fetchAllValues_fron_dropDown() {
-            
-            var consolidated_input = []
-            //{venue : 0,innings: 0,batting_team: 0,bowling_team: 0,bat1: 0,bat2: 0,bat3: 0,bat4: 0,bat5: 0,bat6: 0,bat7: 0,bat8: 0,bat9: 0,bat10: 0,bow1: 0,bow2: 0,bow3: 0,bow4: 0,bow5: 0,bow6: 0,Total_score: 0};
-            for (let i=0;i<fetchValue_sel.length+1;i++) {
-                consolidated_input[i] = fetchValue_sel[i].value
+
+        btn.addEventListener('click', () => {
+            var consolidated_input = [];
+            var fetchValue_sel = document.getElementsByName("fetchValue");
+            for (let i = 0; i < fetchValue_sel.length; i++) {
+                consolidated_input[i] = fetchValue_sel[i].value;
             }
             console.log(consolidated_input);
 
-        }
-        */
+        });
+
 
 
     </script>
