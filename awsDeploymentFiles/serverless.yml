@@ -1,0 +1,64 @@
+service: suman-ipl-6
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-south-1
+  timeout: 60
+  environment:
+    S3_BUCKET: suman-projects
+    MODEL_PATH: IPL_model_trained/iplscorePred-v1.pth
+    LABEL_ENCODE_PATH: IPL_model_trained/label_encode.json
+    MIN_MAX_NORM: IPL_model_trained/min_max_norm_df.json
+     
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:getObject
+      Resource: arn:aws:s3:::suman-projects/*
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    zip: true
+    slim: true
+    strip: false
+    noDeploy:
+      - docutils
+      - jmespath
+      - pip
+      - python-dateutil
+      - setuptools
+      - six
+      - tensorboard
+    useStaticCache: true
+    useDownloadCache: true
+    cacheLocation: "./cache"
+
+
+# you can add packaging information here
+package:
+  individually: false
+  exclude:
+    - package.json
+    - package-log.json
+    - node_modules/**
+    - cache/**
+    - test/**
+    - __pycache__/**
+    - .pytest_cache/**
+    - model/**
+
+functions:
+  predict:
+    handler: handler.predict
+    memorySize: 3008
+    events:
+      - http:
+          path: ipl
+          method: post
+          cors: true
+
+plugins:
+  - serverless-python-requirements
