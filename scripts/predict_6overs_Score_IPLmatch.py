@@ -22,7 +22,7 @@ import torch.nn.functional as F
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import MinMaxScaler
 
-dataset_path = Path.joinpath(Path.cwd(), 'dataset')
+dataset_path = Path.joinpath(Path.cwd().parent, 'dataset')
 filename = 'all_matches.csv'
 json_path = Path.joinpath(dataset_path, 'label_encode.json')
 
@@ -106,7 +106,7 @@ def parseDataset(csv_file=Path.joinpath(dataset_path, filename)):
                   'venue'] = 'MA Chidambaram Stadium'
     df_parsed.loc[df_parsed.venue == 'MA Chidambaram Stadium, Chepauk, Chennai',
                   'venue'] = 'MA Chidambaram Stadium'
-
+    '''
     df_parsed.loc[df_parsed.batting_team ==
                   'Kolkata Knight Riders', 'batting_team'] = 'KKR'
     df_parsed.loc[df_parsed.batting_team ==
@@ -141,6 +141,7 @@ def parseDataset(csv_file=Path.joinpath(dataset_path, filename)):
                   'Sunrisers Hyderabad', 'bowling_team'] = 'SRH'
     df_parsed.loc[df_parsed.bowling_team ==
                   'Mumbai Indians', 'bowling_team'] = 'MI'
+    '''
 
     # Rename striker and non-striker column names :
     df_parsed = df_parsed.rename(columns={
@@ -172,8 +173,16 @@ def parseDataset(csv_file=Path.joinpath(dataset_path, filename)):
 
 def encodeLabels_save_to_file(df):
     label_encode_dict = {}
-
+    players_df = pd.DataFrame(
+        np.append(df.batsmen.unique(), df.bowlers.unique()), columns=['Players'])
     le = LabelEncoder()
+
+    le.fit(players_df.Players)
+    Players_e = le.transform(players_df.Players)
+    Players_e_inv = le.inverse_transform(Players_e)
+    label_encode_dict['Players'] = dict(
+        zip(Players_e_inv, map(int, Players_e)))
+
     le.fit(df.batsmen)
     batsmen_e = le.transform(df.batsmen)
     batsmen_e_inv = le.inverse_transform(batsmen_e)
@@ -281,7 +290,6 @@ def model_df(df):
     json_path = Path.joinpath(dataset_path, 'label_encode.json')
     with open(json_path) as f:
         data = json.load(f)
-
     condition = False
 
     for col in df_model.columns:
@@ -291,10 +299,10 @@ def model_df(df):
         elif col in ['bat1', 'bat2',
                      'bat3', 'bat4', 'bat5', 'bat6', 'bat7', 'bat8', 'bat9', 'bat10']:
             condition = True
-            col = 'batsmen'
+            col = 'Players' #'batsmen'
         elif col in ['bow1',
                      'bow2', 'bow3', 'bow4', 'bow5', 'bow6']:
-            col = 'bowlers'
+            col = 'Players' #'bowlers'
             condition = True
 
         if condition:
@@ -393,11 +401,10 @@ if __name__ == '__main__':
     df_parsed = parseDataset()
     encodeLabels_save_to_file(df_parsed)
 
-    #df_parsed = format_data(df_parsed)
-    #df_parsed = create_batsmen_bowler_df(df_parsed)
-    #df_parsed = update_batsmen_bowler_column_names(df_parsed)
-    #df = model_df(df_parsed)
-    #linear_model(df)
+    df_parsed = format_data(df_parsed)
+    df_parsed = create_batsmen_bowler_df(df_parsed)
+    df_parsed = update_batsmen_bowler_column_names(df_parsed)
+    df = model_df(df_parsed)
+    # linear_model(df)
     endtime = time.time()
     print(endtime - starttime)
-    # pdb.set_trace()

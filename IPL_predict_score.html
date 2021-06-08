@@ -68,9 +68,6 @@
             box-sizing: border-box;
         }
     </style>
-
-
-
 </head>
 
 <body>
@@ -186,20 +183,23 @@
         </fieldset>
         <br><br><br>
 
-
-
         <div class="center">
-            <button id="btn"><b>Predict 1<sup>st</sup> 6-Overs Score</b></button>
-        </div>
-        <br>
-        <div class="center">
+            <input type="button" id="btn"
+                onclick="awsiplpredict('https://yok84pd7yc.execute-api.ap-south-1.amazonaws.com/dev/ipl')"
+                value="Predict 1st 6-Overs Score">
+
+            &emsp;&emsp;&emsp;&emsp;
             <input type="reset">
         </div>
 
-
+        <div>
+            <!--<h1>Result:</h1>-->
+            <h1 id="result">Predicted score is : </h1>
+        </div>
 
     </form>
 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
     <script>
         var venue_sel = document.getElementById("venue_id");
         var bat_sel = document.getElementById("batting_team");
@@ -209,7 +209,6 @@
 
         var btn = document.getElementById('btn');
         var fetchValue_sel = document.getElementsByName("fetchValue");
-
 
         var venue_Object = ['M Chinnaswamy Stadium',
             'Punjab Cricket Association Stadium, Mohali',
@@ -640,17 +639,39 @@
 
         }
 
-        btn.addEventListener('click', () => {
+        function awsiplpredict(url) {
             var consolidated_input = [];
             var fetchValue_sel = document.getElementsByName("fetchValue");
+
             for (let i = 0; i < fetchValue_sel.length; i++) {
                 consolidated_input[i] = fetchValue_sel[i].value;
             }
             console.log(consolidated_input);
 
-        });
+            document.getElementById('result').textContent = 'Processing...';
 
+            var settings = {
+                async: true,
+                crossDomain: true,
+                url: url,
+                contentType: "application/json",
+                type: "POST",
+                data: JSON.stringify({
+                    "input_str": consolidated_input
+                })
+            };
 
+            $.ajax(settings)
+                .done(function (response) {
+                    console.log(response);
+                    document.getElementById('result').textContent = response.toFixed(0);
+                })
+                .fail(function (error) {
+                    alert("There was an error while processing the model");
+                    console.log(error);
+                });
+
+        }
 
     </script>
 
