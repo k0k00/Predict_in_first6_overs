@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: AWS SAM template with a MNIST and IPL API prediction
+
+Globals:
+  Api:
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+    BinaryMediaTypes:
+      - image/png
+      - image/jpg
+      - image/jpeg
+  Function:
+    Timeout: 50
+    MemorySize: 5000
+
+Resources:
+  MnistIplFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      PackageType: Image
+      ImageUri: 936131757702.dkr.ecr.ap-south-1.amazonaws.com/torchbaseimage:latest
+      Events:
+        MnistEvent:
+          Type: Api 
+          Properties:
+            Path: /classify_digit
+            Method: post
+        IplEvent:
+          Type: Api
+          Properties:
+            Path: /predict_ipl_score
+            Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./app
+      DockerTag: latest-1.1
+
+
+Outputs:
+  MnistEventApi:
+    Description: "API Gateway endpoint URL for Prod stage for Inference function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/classify_digit"
+
+  IplEventApi:
+    Description: "API Gateway endpoint URL for Prod stage for Inference function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/predict_ipl_score"
+
+  MnistIplFunction:
+    Description: "Inference Lambda Function ARN"
+    Value: !GetAtt MnistIplFunction.Arn
+  MnistIplFunctionIamRole:
+    Description: "Implicit IAM Role created for MnistIplFunction"
+    Value: !GetAtt MnistIplFunction.Arn
