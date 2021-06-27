@@ -27,10 +27,10 @@ As a cricket fan I watch all the matches, during that time I observed that **"Po
 
 * only 2-fielders can stay outside the Inner-circle
   
-  ![powerplay_field](http://newsimg.bbc.co.uk/media/images/41052000/gif/_41052676_fielding_1st15_3_298.gif)
+  ![powerplay_field](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/ppfield.JPG)
 * After powerplay, upto 5-fielders can stay outside inner circle & 4-fielders must remain inside the inner circle.
 
-    ![afterPowerplayField](http://newsimg.bbc.co.uk/media/images/41052000/gif/_41052662_fielding_post15_4_298.gif)
+    ![afterPowerplayField](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/no_ppfield.JPG)
   
 ## Importance:
 Powerplay makes the **batting compatively easy.**
