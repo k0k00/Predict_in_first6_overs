@@ -284,8 +284,7 @@ def update_batsmen_bowler_column_names(df):
 
 
 def model_df(df):
-    df_model = df[['venue', 'innings', 'batting_team', 'bowling_team', 'bat1', 'bat2', 'bat3', 'bat4', 'bat5', 'bat6', 'bat7', 'bat8',
-                   'bat9', 'bat10', 'bow1', 'bow2', 'bow3', 'bow4', 'bow5', 'bow6', 'runs_off_bat', 'extras', 'Total_score', 'player_dismissed']]
+    df_model = df[['venue', 'innings', 'batting_team', 'bowling_team', 'bat1', 'bat2', 'bat3', 'bat4', 'bat5', 'bat6', 'bat7', 'bat8','bat9', 'bat10', 'bow1', 'bow2', 'bow3', 'bow4', 'bow5', 'bow6', 'runs_off_bat', 'extras', 'Total_score', 'player_dismissed']]
     # Encode the Labels from the existing encoded values
     json_path = Path.joinpath(dataset_path, 'label_encode.json')
     with open(json_path) as f:
@@ -314,9 +313,8 @@ def model_df(df):
     return df_model
 
 # Utility function to train the model
-
-
-def fit(num_epochs, model, loss_fn, opt, train_dl):
+def fit(num_epochs, model, loss_fn, opt, train_dl,test_dl):
+    train_loss_lst,test_loss_lst = [],[]
     # Repeat for given number of epochs
     for epoch in range(num_epochs):
         # Train with batches of data
@@ -327,17 +325,31 @@ def fit(num_epochs, model, loss_fn, opt, train_dl):
             #import pdb;pdb.set_trace()
             #print(pred);import pdb;pdb.set_trace()
             # 2. Calculate loss
-            loss = loss_fn(pred, yb)
+            train_loss = loss_fn(pred, yb)
+            train_loss_lst.append(train_loss.item())
             # 3. Compute gradients
-            loss.backward()
+            train_loss.backward()
             # 4. Update parameters using gradients
             opt.step()
             # 5. Reset the gradients to zero
             opt.zero_grad()
+        
+        with torch.no_grad():
+            for xb,yb in test_dl:
+                pred = model(xb)
+                test_loss = loss_fn(pred,yb)
+                test_loss_lst.append(test_loss.item())
+
         # Print the progress
         if (epoch+1) % 10 == 0:
-            print('Epoch [{}/{}], Loss: {}'.format(epoch +
-                  1, num_epochs, loss.item()))
+            print('Epoch [{}/{}], Train-Loss: {:.4f} , Test-Loss : {:.4f}'.format(epoch +
+                  1, num_epochs, train_loss.item(),test_loss.item()))
+
+    print('#### Train loss is : {}'.format(train_loss_lst))
+    print('#### Test loss is : {}'.format(test_loss_lst))
+    loss_dict = {'train' : train_loss_lst,'test' : test_loss_lst}
+    with open('loss.json','w') as f:
+        json.dump(loss_dict,f)
 
 
 def linear_model(df):
@@ -367,10 +379,14 @@ def linear_model(df):
     # Define dataset
     train_ds = TensorDataset(inputs, targets)
     print('### Length of Dataset is : {}'.format(len(train_ds)))
+    train_ds,test_ds = torch.utils.data.random_split(train_ds,[(round(int(len(train_ds)*70)/100)),len(train_ds)-round(int((len(train_ds)*70)/100))])
+    import pdb;pdb.set_trace() 
+
 
     # Define data loader
     batch_size = 5
     train_dl = DataLoader(train_ds, batch_size, shuffle=True)
+    test_dl = DataLoader(test_ds, 2*batch_size, shuffle=True)
 
     # Define model
     model = nn.Linear(20, 1)
@@ -382,7 +398,7 @@ def linear_model(df):
     # Define optimizer
     opt = torch.optim.SGD(model.parameters(), lr=1e-1)
 
-    fit(100, model, loss_fn, opt, train_dl)
+    fit(100, model, loss_fn, opt, train_dl,test_dl)
 
     preds = model(inputs)
     mms_output_obj.inverse_transform(targets)
@@ -405,6 +421,6 @@ if __name__ == '__main__':
     df_parsed = create_batsmen_bowler_df(df_parsed)
     df_parsed = update_batsmen_bowler_column_names(df_parsed)
     df = model_df(df_parsed)
-    # linear_model(df)
+    linear_model(df)
     endtime = time.time()
     print(endtime - starttime)
