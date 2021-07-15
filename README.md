@@ -7,6 +7,9 @@ You want to access code? [Click here](https://github.com/sumankanukollu/cricket_
 
 You want to Predict Score? [Click Here](https://suman-projects.s3.ap-south-1.amazonaws.com/myWebPage/index.html)
 
+## Project Demo
+![Inference video](Inference_Recoding.gif)
+
 ## Introduction: 
 It's COVID lockdown time. Everyone is worried about the increasing COVID cases, Work From Home (WFH) environment. No way to go out, No parties, No outing, No vacation plans, No gatherings ...... 
 
