@@ -3,7 +3,9 @@
 
 We start with a basic understanding of powerplay in IPL, and quickly go through "Powerplay" score prediction walk through & Hyper Parameters Optimization --> based on this a predictive score in 20-overs.
 
-[Click to access Code](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/IPL_Powerplay_Score_Prediction_v2.ipynb)
+You want to access code? [Click here](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/IPL_Powerplay_Score_Prediction_v2.ipynb)
+
+You want to Predict Score? [Click Here](https://suman-projects.s3.ap-south-1.amazonaws.com/myWebPage/index.html)
 
 ## Introduction: 
 It's COVID lockdown time. Everyone is worried about the increasing COVID cases, Work From Home (WFH) environment. No way to go out, No parties, No outing, No vacation plans, No gatherings ...... 
@@ -513,3 +515,6 @@ actual_values[:5]
     tensor([66.]), 
     tensor([64.])]
 ```
+
+Based on these I can say this model is 80% Accurate. Still there is a scope for improvement.Anyone can start from this point []access code from here](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/IPL_Powerplay_Score_Prediction_v2.ipynb)
+
