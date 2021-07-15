@@ -519,5 +519,5 @@ actual_values[:5]
     tensor([64.])]
 ```
 
-Based on these I can say this model is 80% Accurate. Still there is a scope for improvement.Anyone can start from this point []access code from here](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/IPL_Powerplay_Score_Prediction_v2.ipynb)
+Based on these I can say this model is 80% Accurate. Still there is a scope for improvement.Anyone can start from this point [access code from here](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/IPL_Powerplay_Score_Prediction_v2.ipynb)
 
