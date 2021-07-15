@@ -1,8 +1,9 @@
 # 	IPL Powerplay Score Prediction in AWS Lambda
 ![IPL banner](https://cricketaddictor.gumlet.io/wp-content/uploads/2021/02/153757448_173638941016448_6980867142752435675_n.jpg?compress=true&quality=80&w=1920&dpr=2.6)
 
+We start with a basic understanding of powerplay in IPL, and quickly go through "Powerplay" score prediction walk through & Hyper Parameters Optimization --> based on this a predictive score in 20-overs.
 
-We start with a basic understanding of powerplay in IPL, and quickly go through "Powerplay" score prediction --> based on this a predictive score in 20-overs.
+[Click to access Code](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/IPL_Powerplay_Score_Prediction_v2.ipynb)
 
 ## Introduction: 
 It's COVID lockdown time. Everyone is worried about the increasing COVID cases, Work From Home (WFH) environment. No way to go out, No parties, No outing, No vacation plans, No gatherings ...... 
@@ -74,7 +75,7 @@ downloadDataset()
 
 
 
-## **2. Data Frames:** 
+## 2. Data Frames:
 
 Here we will use pandas to load the dataset into pandas object. Can be done by below code:
 
@@ -95,9 +96,7 @@ Which contains 200664 : rows , 22 : columns
 | 335982   | 2007/08 | 4/18/2008  | M Chinnaswamy Stadium | 1       | 0.3  | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum | SC Ganguly  | P Kumar | 0            | 1      | 1     |         |      |         |         |             |                  |                   |                        |
 | 335982   | 2007/08 | 4/18/2008  | M Chinnaswamy Stadium | 1       | 0.4  | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum | SC Ganguly  | P Kumar | 0            | 0      |       |         |      |         |         |             |                  |                   |                        |
 
-
-
-## **3. Exploratory Data Analysis (EDA):**
+## 3. Exploratory Data Analysis (EDA):
 
 Prior to Analyze data, **"Data Processing"** is considered most important step, in creation of the Learning Model !  
 
@@ -105,18 +104,41 @@ We can easily get tons of Data in form of various Datasets, but to make that dat
 ![Data processing snippet](https://miro.medium.com/max/1400/1*vOugEJbcFMoO5qU6TAhpsw.jpeg)
 
 When we freshly download a Dataset for our project, the Data it contains is random(most of the time) i.e. not arranged or not filled in the way we need it to be.
-Sometimes, it might have
-* NULL Values
-* Unnecessary Features
-* Datatypes not in a proper format. etc…
+Sometimes, it might have `NULL Values, Unnecessary Features, Datatypes not in a proper format. etc…`
 
 So, to treat all these shortcomings, we go through a process which is popularly known as “Data Preprocessing’’.
 
-Comming back to our IPL Dataset, we have to do data processing like below, to train model. 
+Coming back to our IPL Dataset, we have to do data processing like below, to train model. 
 
-* Here, headers of this dataset, be self-explanatory. 
-* Next Identify the "Null" values in the dataset, hopefully there is no null values present in this dataset.
+Here, headers of this dataset, be self-explanatory. 
+
+#### Data Processing Steps:
+
+* Next `Identify the "Null" values` in the dataset, hopefully there is no null values present in this dataset.
+
+* **Select the 1<sup>st</sup> 6-Overs match details & drop rest:**
+  
+    * Here as we are predicting the "powerplay" score we can drop rest of the data,except 1st 6-overs and 
+    * drop all innings > 2, 
+    As there is no scope for 3rd and 4th innings
+
+* **Identify & Drop Innings played < 6 overs :**
+
+    * In our data few matches are not conducted and declared as "no result" may be due to rain... some technical problems.
+    * Either match result is declared by DCB method, we can't predict the score.
+
+    Which may lead to outliers, to our model. Because If team played only 3 overs, then score minimum value effects which leads to modify the following "Normalization" process. So better to drop these data in our prediction.
+    ```python
+    obj = df_parsed.query('ball<6.0&innings<3').groupby(
+        								['match_id','venue','innings','batting_team','bowling_team'])
+    
+    for key,val in obj:
+        if val['ball'].count()<36:
+            df_parsed.drop(labels=val.index,axis=0,inplace=True)
+    ```
+
 * Here columns 'season' and 'start_date'  are not needed for our prediction. ```So we can drop the columns 'season' and 'start_date' from the dataset.```
+
 * Delete Non-existing teams : ```  'Kochi Tuskers Kerala' 'Pune Warriors','Rising Pune Supergiants', 'Rising Pune Supergiant','Gujarat Lions'    ```
 
 * Replace the old team names with new team name:
@@ -125,6 +147,7 @@ Comming back to our IPL Dataset, we have to do data processing like below, to tr
     'Deccan Chargers'   --> 'Sunrisers Hyderabad'
     'Punjab Kings'      --> 'Kings XI Punjab'
     ```
+    
 * Correct the venue column with unique names. In this dataset same stadium is being represented as in multiple ways. So identify those and rename.
     ```
     ['M Chinnaswamy Stadium', 'M.Chinnaswamy Stadium']
@@ -134,15 +157,12 @@ Comming back to our IPL Dataset, we have to do data processing like below, to tr
     ['Rajiv Gandhi International Stadium, Uppal', 'Rajiv Gandhi International Stadium']
     ['MA Chidambaram Stadium, Chepauk','MA Chidambaram Stadium',      'MA Chidambaram Stadium, Chepauk, Chennai']
     ```
-* Rename the column names:
-    ```
-    'striker'     --> 'batsmen'
-    'non-striker' --> 'batsmen_nonstriker'  (This column is not required)
-    'bowler'      --> 'bowlers'
-    ```
-* Create a columns "Total_score" : which reflects the runs through bat and extra runs through wides,byes,noballs,legbyes...etc.  Hence we can drop columns ```['wides', 'noballs', 'byes', 'legbyes', 'penalty', 'wicket_type','other_wicket_type', 'other_player_dismissed']```
-* **Select required Data:**
-    Here as we are predicting the "powerplay" score we can drop rest of the data,except 1st 6-overs and drop all innings > 2, As there is no scope for 3rd and 4th innings
+
+* Create a columns `"Total_score" : which reflects the runs through bat and extra runs` through wide's,byes,no-balls,leg byes... etc.  
+    Hence we can drop columns ```['wides', 'noballs', 'byes', 'legbyes', 'penalty', 'wicket_type','other_wicket_type', 'other_player_dismissed']```
+
+    
+
 
 #### Code:
   ```python
@@ -203,138 +223,244 @@ Comming back to our IPL Dataset, we have to do data processing like below, to tr
   ```
 
   ```python
-  df_parsed[(df_parsed.ball < 6.0) & (df_parsed.innings < 3)]
+df_parsed[(df_parsed.ball < 6.0) & (df_parsed.innings < 3)]
 
-  ### Total 35 : venue details present 
-  ### Total 8  : Batting teams are there
-  ### Total 8  : Bowlling teams are there
-  ### Batting teams are : ['Kolkata Knight Riders' 'Royal Challengers Bangalore'
-  'Chennai Super Kings' 'Kings XI Punjab' 'Rajasthan Royals'
-  'Delhi Capitals' 'Sunrisers Hyderabad' 'Mumbai Indians']
-  ### Bowling teams are : ['Royal Challengers Bangalore' 'Kolkata Knight Riders' 'Kings XI Punjab'
-  'Chennai Super Kings' 'Delhi Capitals' 'Rajasthan Royals'
-  'Sunrisers Hyderabad' 'Mumbai Indians']
-  ### Shape of data frame after initial cleanup :(173645, 13)
+### Total 33 : venue details present 
+### Total 8  : Batting teams are there
+### Total 8  : Bowlling teams are there
+### Batting teams are : ['Kolkata Knight Riders' 'Royal Challengers Bangalore'
+ 'Chennai Super Kings' 'Kings XI Punjab' 'Rajasthan Royals'
+ 'Delhi Capitals' 'Sunrisers Hyderabad' 'Mumbai Indians']
+### Bowling teams are : ['Royal Challengers Bangalore' 'Kolkata Knight Riders' 'Kings XI Punjab'
+ 'Chennai Super Kings' 'Delhi Capitals' 'Rajasthan Royals'
+ 'Sunrisers Hyderabad' 'Mumbai Indians']
+### Shape of data frame after initial cleanup :(54525, 13)
   ```
 
-  Then, our Data frame looks like below with 173645 : rows and , 13 : columns
+#### Data Frame looks like :
+  Then, our Data frame looks like below with 54370 : rows, 13 : columns (Initially it was 200664 : rows , 22 : columns)
 
-
-| match_id | venue  | innings               | ball | batting_team | bowling_team          | batsmen                     | batsmen_non_striker | bowlers     | runs_off_bat | extras | player_dismissed | Total_score |   |
-| -------- | ------ | --------------------- | ---- | ------------ | --------------------- | --------------------------- | ------------------- | ----------- | ------------ | ------ | ---------------- | ----------- | - |
-| 335982 | M Chinnaswamy Stadium | 1    | 0.1          | Kolkata Knight Riders | Royal Challengers Bangalore | SC Ganguly          | BB McCullum | P Kumar      | 0      | 1                | NaN         | 1 |
-| 335982 | M Chinnaswamy Stadium | 1    | 0.2          | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum         | SC Ganguly  | P Kumar      | 0      | 0                | NaN         | 0 |
-| 335982 | M Chinnaswamy Stadium | 1    | 0.3          | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum         | SC Ganguly  | P Kumar      | 0      | 1                | NaN         | 1 |
-| 335982 | M Chinnaswamy Stadium | 1    | 0.4          | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum         | SC Ganguly  | P Kumar      | 0      | 0                | NaN         | 0 |
-| 335982 | M Chinnaswamy Stadium | 1    | 0.5          | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum         | SC Ganguly  | P Kumar      | 0      | 0                | NaN         | 0 |
-
-
-
-
-
+| match_id | venue                 | innings | ball | batting_team          | bowling_team                | batsmen     | batsmen_non_striker | bowlers | runs_off_bat | extras | player_dismissed | Total_score |
+| -------- | --------------------- | ------- | ---- | --------------------- | --------------------------- | ----------- | ------------------- | ------- | ------------ | ------ | ---------------- | ----------- |
+| 335982   | M Chinnaswamy Stadium | 1       | 0.1  | Kolkata Knight Riders | Royal Challengers Bangalore | SC Ganguly  | BB McCullum         | P Kumar | 0            | 1      | NaN              | 1           |
+| 335982   | M Chinnaswamy Stadium | 1       | 0.2  | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum | SC Ganguly          | P Kumar | 0            | 0      | NaN              | 0           |
+| 335982   | M Chinnaswamy Stadium | 1       | 0.3  | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum | SC Ganguly          | P Kumar | 0            | 1      | NaN              | 1           |
+| 335982   | M Chinnaswamy Stadium | 1       | 0.4  | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum | SC Ganguly          | P Kumar | 0            | 0      | NaN              | 0           |
+| 335982   | M Chinnaswamy Stadium | 1       | 0.5  | Kolkata Knight Riders | Royal Challengers Bangalore | BB McCullum | SC Ganguly          | P Kumar | 0            | 0      | NaN              | 0           |
 
 ## **4. Encoding:**
-  If the data set loaded has the columns with the labels, then the label encoder solves the transformation from string to numerical values and save the details in a file.
+Till now as a initial step in step-2,
 
-   In our dataset, we have labels for the below columns.
-  ```
+* We cleaned our dataset with all the "null" values and 
+
+* filtered the columns/rows data (which are not used for prediction) and
+
+* Added the required column with values (like total_score) to make the dataset clean.
+
+As you can see above, our cleaned dataset is having 13 columns of multiple Dtype like int64 and float64 and object.
+
+So next what I am going to do is trying to convert all these multiple Dtypes into a single Dtype, to train my model.
+
+  ```python
     1   venue                54525 non-null  object 
     4   batting_team         54525 non-null  object 
     5   bowling_team         54525 non-null  object 
     6   batsmen              54525 non-null  object 
-    7   batsmen_non_striker  54525 non-null  object 
-    8   bowlers              54525 non-null  object 
+    7   bowlers              54525 non-null  object 
   ```
 
-### Code:
+#### 4.1. Encode "batsmen" and "bowlers" column values:
+  * Here we can see, few players who can bat as well as bowl.
+    Means same player will be listed as a batsmen and as well as bowler.
+  * So to make the prediction properly, I am creating one Data frame with all the players name it as "players_df", which I use for encoding the players with some value to identify.
+  * For inference going further, I create a dictionary with all these encoded values 
+
 ```python
-  label_encode_dict = {}
+players_df = pd.DataFrame(np.append(
+                          df_parsed.batsmen.unique(), df_parsed.bowlers.unique()),
+                          columns=['Players']
+                      ) 
 
-  le = LabelEncoder()
-  le.fit(players_df.Players)
-  Players_e = le.transform(players_df.Players)
-  Players_e_inv = le.inverse_transform(Players_e)
+label_encode_dict = {}
 
-  label_encode_dict['Players'] = dict(
-        zip(Players_e_inv, map(int, Players_e)))
+dct = dict(enumerate(players_df.Players.astype('category').cat.categories))
+label_encode_dict['Players'] = dict(zip(dct.values(),dct.keys()))
+```
+#### 4.2. Encode "venue" and "batting_team" and "bowling_team" column values:
+  ```python
+  for col in ['venue', 'batting_team', 'bowling_team']:
+      dct = dict(enumerate(df_parsed[col].astype('category').cat.categories))
+      label_encode_dict[col] = dict(zip(dct.values(),dct.keys()))
+  ```
+#### 4.3. Save the encoded values to a json file:
+```python
+label_encode_dict['Total_score_min'] = float(Total_score_min_max[0])
+label_encode_dict['Total_score_max'] = float(Total_score_min_max[1])
+label_encode_dict['Total_score_min'],label_encode_dict['Total_score_max']
 
-  le.fit(df_parsed.venue)
-  venue_e = le.transform(df_parsed.venue)
-  venue_e_inv = le.inverse_transform(venue_e)
-  label_encode_dict['venue'] = dict(zip(venue_e_inv, map(int, venue_e)))
-
-  le.fit(df_parsed.batting_team)
-  batting_team_e = le.transform(df_parsed.batting_team)
-  batting_team_e_inv = le.inverse_transform(batting_team_e)
-  label_encode_dict['batting_team'] = dict(
-    zip(batting_team_e_inv, map(int, batting_team_e)))
-
-  le.fit(df_parsed.bowling_team)
-  bowling_team_e = le.transform(df_parsed.bowling_team)
-  bowling_team_e_inv = le.inverse_transform(bowling_team_e)
-  label_encode_dict['bowling_team'] = dict(
-    zip(bowling_team_e_inv, map(int, bowling_team_e)))
-
-  with open(json_path, 'w') as f:
+with open(json_path, 'w') as f:
     json.dump(label_encode_dict, f)
 ```
-* **Format dataset :**
-  Next grab all the players who played in 6-overs (bat and bowl) and arrange across in multiple columns say [bat1,bat2,bat3,.....bat10,bow1,bo2,bo3,....bow5,bow6] in the same sequence from the dataset (for better prediction).
 
-  During powerplay 10-batsmen can play if they loose wickets as well as only 6-bowlers can bowl 1-over each. 
-  So, I created columns for 10-batsmen and 6-bowlers
+#### 4.4. Format the Dataset:
+In this step I am trying to club the all rows with respect to matchID and Innings (as match ID is unique way to identify a particular match and Innings to identify who bat first).
 
-  Now the data frame looks like :
-  
-  | venue | innings | batting_team | bowling_team | bat1 | bat2 | bat3 | bat4 | bat5 | bat6 | bat7 | bat8 | bat9 | bat10 | bow1 | bow2 | bow3 | bow4 | bow5 | bow6 | runs_off_bat | extras | Total_score | player_dismissed |
-  | ----- | ------- | ------------ | ------------ | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----- | ---- | ---- | ---- | ---- | ---- | ---- | ------------ | ------ | ----------- | ---------------- |
-  | 15    | 1       | 3            | 6            | 419  | 70   | 385  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0   | 326  | 512  | 19   | 0.0  | 0.0  | 0.0  | 51           | 10     | 61          | 1                |
-  | 15    | 2       | 6            | 3            | 351  | 496  | 483  | 187  | 97   | 297  | 0.0  | 0.0  | 0.0  | 0.0   | 22   | 163  | 20   | 0.0  | 0.0  | 0.0  | 19           | 7      | 26          | 4                |
-  | 23    | 1       | 0            | 2            | 331  | 286  | 274  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0   | 65   | 408  | 201  | 0.0  | 0.0  | 0.0  | 50           | 3      | 53          | 1                |
-  | 23    | 2       | 2            | 0            | 207  | 201  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0   | 184  | 296  | 0.0  | 0.0  | 0.0  | 0.0  | 61           | 2      | 63          | 1                |
-  | 10    | 1       | 5            | 1            | 468  | 506  | 443  | 255  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0  | 0.0   | 146  | 62   | 275  | 0.0  | 0.0  | 0.0  | 38           | 2      | 40          | 2                |
+Based on these two details, 
+* grab all the batsmen and bowler details who batted and bowled in 1<sup>st</sup> 6-overs
+* Calculate the total score (runs through bat + extra runs)
+* How many players dismissed in 1st 6-overs
 
+#### 4.5. Align the batsmen and bowlers details in to a separate column
 
+In above formatted dataset, we got list of batsmen and bowlers details who batted and bowled in 6-overs.
 
-## **5. Normalization:**
+Now we have to arrange these batsmen into a separate columns,
+```
+ * say bat1,bat2,bat3,bat4....bat10
+ * say bow1,bow2,bow3.....bow6
+```
 
-In Encoding step all data has been converted into numerical values, which are in different ranges. In this Normalization step, we represent the numerical column values in a common data scale, without loosing information & distorting differences in the ranges of values, with the help of "MinMaxScaler".
+Here I selected only 10-batsmen (as we have only 10-wickets), and 6-bowlers (can bowl in 6-overs) because in 6-overs this is only possible.
+
+```
+For proper prediction the order of batsmen and bowlers given the dataset matters. So we need to keep the order :
+* batsmen : who batted 1st,2nd 3rd and 4th ... wicket same
+* bowler  : who bowled in 1st,2nd,3rd,4th,5th and 6th overs same
+```
+
+#### 4.6. Create a batsmen and bowlers dummy data frame:
+IN order to keep track of the order same, so 1st I am going to create a dummy data frame 
+* with 10-batsmen with column names [bat1,bat2,.....bat9,bat10]
+* with 6-bowlers with column names [bow1,bow2,bow3,bow4,bow5,bow6]
+
+#### 4.7. Update the batsmen list of elements into each column in the same order:
+
+Means, data which is in list of elements in each matchID and innings into corresponding individual batsmen columns in the same order. 
+```python
+Example, here in below list 1st batsmen is bat1 -> SC Ganguly, 2nd is bat2 -> BB McCullum, 3rd is bat3 -> RT Poting ...etc like 
+
+"['SC Ganguly', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'SC Ganguly', 'SC Ganguly', 'SC Ganguly', 'BB McCullum', 'BB McCullum', 'SC Ganguly', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'SC Ganguly', 'SC Ganguly', 'SC Ganguly', 'BB McCullum', 'SC Ganguly', 'SC Ganguly', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'SC Ganguly', 'BB McCullum', 'SC Ganguly', 'RT Ponting', 'RT Ponting', 'RT Ponting', 'RT Ponting', 'BB McCullum', 'RT Ponting', 'BB McCullum', 'RT Ponting', 'RT Ponting', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'RT Ponting', 'BB McCullum', 'RT Ponting', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'RT Ponting', 'BB McCullum', 'RT Ponting', 'BB McCullum', 'RT Ponting', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'RT Ponting', 'RT Ponting', 'RT Ponting', 'RT Ponting', 'RT Ponting', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'RT Ponting', 'RT Ponting', 'RT Ponting', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'DJ Hussey', 'DJ Hussey', 'BB McCullum', 'DJ Hussey', 'BB McCullum', 'DJ Hussey', 'DJ Hussey', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'DJ Hussey', 'BB McCullum', 'DJ Hussey', 'DJ Hussey', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'DJ Hussey', 'BB McCullum', 'DJ Hussey', 'DJ Hussey', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'DJ Hussey', 'BB McCullum', 'Mohammad Hafeez', 'Mohammad Hafeez', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'Mohammad Hafeez', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum', 'BB McCullum']"
+
+```
+
+#### 4.8. Encode the multiple Dtypes into single Dtype:
+
+Now its time to use, the label encoded values (already done in previous steps) to encode the dataframe.
 
 ```python
-inputs_df  = df[['venue', 'innings', 'batting_team', 'bowling_team', 'bat1', 'bat2', 'bat3', 'bat4', 'bat5', 'bat6','bat7', 'bat8', 'bat9', 'bat10', 'bow1', 'bow2', 'bow3', 'bow4', 'bow5', 'bow6']]  # .to_numpy() #dtype=float)
+json_path = Path.joinpath(dataset_path, 'label_encode.json')
+with open(json_path) as f:
+    data = json.load(f)
 
-targets_df = df[['Total_score']]  # .to_numpy()#dtype=float)
+condition = False
 
+for col in df_model.columns:
+    if col in data.keys():
+        condition = True
+        col = col
+    elif col in ['bat1', 'bat2','bat3', 'bat4', 'bat5', 'bat6', 'bat7', 'bat8', 'bat9', 'bat10']:
+        condition = True
+        col = 'Players' #'batsmen'
+    elif col in ['bow1','bow2', 'bow3', 'bow4', 'bow5', 'bow6']:
+        col = 'Players' #'bowlers'
+        condition = True
 
-mms_input_obj = MinMaxScaler()
-df_input_norm = pd.DataFrame(mms_input_obj.fit_transform(inputs_df), columns=inputs_df.columns)
-
-mms_output_obj = MinMaxScaler()
-df_output_norm = pd.DataFrame(mms_output_obj.fit_transform(targets_df), columns=targets_df.columns)
-
-inputs_np  = df_input_norm.to_numpy()
-targets_np = df_output_norm.to_numpy()
-
-inputs = torch.from_numpy(inputs_np).float()
-targets = torch.from_numpy(targets_np).float()
-
-targets = targets.view(inputs.shape[0], 1)
+    if condition:
+        condition = False
+        for key in data[col]:
+            df_model = df_model.replace([key], data[col][key])
 ```
-| venue   | innings | batting_team | bowling_team | bat1     | bat2     | bat3     | bat4     | bat5     | bat6     | bat7 | bat8 | bat9 | bat10 | bow1     | bow2     | bow3     | bow4 | bow5 | bow6 |
-| ------- | ------- | ------------ | ------------ | -------- | -------- | -------- | -------- | -------- | -------- | ---- | ---- | ---- | ----- | -------- | -------- | -------- | ---- | ---- | ---- |
-| 0.43750 | 0.0     | 0.285714     | 0.714286     | 0.803150 | 0.140594 | 0.739726 | 0.000000 | 0.000000 | 0.000000 | 0.0  | 0.0  | 0.0  | 0.0   | 0.621569 | 1.000000 | 0.035225 | 0.0  | 0.0  | 0.0  |
-| 0.43750 | 1.0     | 0.714286     | 0.285714     | 0.673228 | 0.972277 | 0.941292 | 0.372549 | 0.194118 | 0.574257 | 0.0  | 0.0  | 0.0  | 0.0   | 0.039216 | 0.324803 | 0.037182 | 0.0  | 0.0  | 0.0  |
-| 0.65625 | 0.0     | 0.000000     | 0.428571     | 0.633858 | 0.546535 | 0.524462 | 0.000000 | 0.000000 | 0.000000 | 0.0  | 0.0  | 0.0  | 0.0   | 0.129412 | 0.779528 | 0.395303 | 0.0  | 0.0  | 0.0  |
-| 0.65625 | 1.0     | 0.428571     | 0.000000     | 0.401575 | 0.396040 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | 0.0  | 0.0  | 0.0  | 0.0   | 0.364706 | 0.561024 | 0.000000 | 0.0  | 0.0  | 0.0  |
-| 0.28125 | 0.0     | 0.857143     | 0.142857     | 0.907480 | 0.996040 | 0.851272 | 0.486275 | 0.000000 | 0.000000 | 0.0  | 0.0  | 0.0  | 0.0   | 0.294118 | 0.100394 | 0.526419 | 0.0  | 0.0  | 0.0  |
 
-## **6. Split Test & Train:**
+#### 4.9. At the end of this step our data frame looks like :
+
+| venue | innings | batting_team | bowling_team | bat1 | bat2 | bat3 | bat4 | bat5 | bat6 | bat7 | bat8 | bat9 | bat10 | bow1 | bow2 | bow3 | bow4 | bow5 | bow6 | runs_off_bat | extras | Total_score | player_dismissed |
+| ----- | ------- | ------------ | ------------ | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ----- | ---- | ---- | ---- | ---- | ---- | ---- | ------------ | ------ | ----------- | ---------------- |
+| 14    | 1       | 3            | 6            | 419  | 70   | 385  | 0    | 0    | 0    | 0    | 0    | 0    | 0     | 326  | 512  | 19   | 0    | 0    | 0    | 51           | 10     | 61          | 1                |
+| 14    | 2       | 6            | 3            | 351  | 496  | 483  | 187  | 97   | 297  | 0    | 0    | 0    | 0     | 22   | 163  | 20   | 0    | 0    | 0    | 19           | 7      | 26          | 4                |
+| 21    | 1       | 0            | 2            | 331  | 286  | 274  | 0    | 0    | 0    | 0    | 0    | 0    | 0     | 65   | 408  | 201  | 0    | 0    | 0    | 50           | 3      | 53          | 1                |
+
+## 5. Normalization:
+In Encoding step all data has been converted into numerical values, which are in different ranges. 
+
+In this Normalization step, we represent the numerical column values in a common data scale, without loosing information & distorting differences in the ranges of values, with the help of "MinMaxScaler".
+
+```python
+df_model = df_model.applymap(np.float64)
+df_norm = (df_model - df_model.min())/(df_model.max() - df_model.min())
+
+df_norm.fillna(0.0,inplace=True)
+
+df_norm.head()
+```
+At the end of this step data frame looks like :
+
+| venue   | innings | batting_team | bowling_team | bat1     | bat2     | bat3     | bat4     | bat5     | bat6     | ... | bow1     | bow2     | bow3     | bow4 | bow5 | bow6 | runs_off_bat | extras   | Total_score | player_dismissed |
+| ------- | ------- | ------------ | ------------ | -------- | -------- | -------- | -------- | -------- | -------- | --- | -------- | -------- | -------- | ---- | ---- | ---- | ------------ | -------- | ----------- | ---------------- |
+| 0.43750 | 0.0     | 0.428571     | 0.857143     | 0.819253 | 0.134387 | 0.751953 | 0.000000 | 0.000000 | 0.000000 | ... | 0.636008 | 1.000000 | 0.037109 | 0.0  | 0.0  | 0.0  | 0.452632     | 0.666667 | 0.516484    | 0.2              |
+| 0.43750 | 1.0     | 0.857143     | 0.428571     | 0.685658 | 0.976285 | 0.943359 | 0.365949 | 0.189824 | 0.586957 | ... | 0.041096 | 0.314342 | 0.039062 | 0.0  | 0.0  | 0.0  | 0.115789     | 0.466667 | 0.131868    | 0.8              |
+| 0.65625 | 0.0     | 0.000000     | 0.285714     | 0.646365 | 0.561265 | 0.535156 | 0.000000 | 0.000000 | 0.000000 | ... | 0.125245 | 0.795678 | 0.392578 | 0.0  | 0.0  | 0.0  | 0.442105     | 0.200000 | 0.428571    | 0.2              |
+| 0.65625 | 1.0     | 0.285714     | 0.000000     | 0.402750 | 0.393281 | 0.000000 | 0.000000 | 0.000000 | 0.000000 | ... | 0.358121 | 0.575639 | 0.000000 | 0.0  | 0.0  | 0.0  | 0.557895     | 0.133333 | 0.538462    | 0.2              |
+| 0.28125 | 0.0     | 0.714286     | 0.142857     | 0.915521 | 0.996047 | 0.865234 | 0.499022 | 0.000000 | 0.000000 | ... | 0.283757 | 0.115914 | 0.537109 | 0.0  | 0.0  | 0.0  | 0.315789     | 0.133333 | 0.285714    | 0.4              |
 
 
+## 6. Split Train & test data:
+
+Split the dataset into 70% for train and 30% for test
+![splitDatasetImg](https://miro.medium.com/max/1400/1*n7Ob33nRMq07BZPbNtfItw.png)
+
+  1. Identify the inputs vs targets from the pandas dataframe  and convert into Torch Tensor
+  2. Create the torch dataset
+  3. Now split the torch_ds into train_ds and test_ds datasets (70% vs 30%)
+  4. Create a dataloader for train_ds and test_ds
+
+```python
+inputs = torch.Tensor(df_norm.iloc[:,:-4].values.astype(np.float32))
+targets = torch.Tensor(df_norm.loc[:,'Total_score'].values.reshape(-1,1).astype(np.float32))
+
+torch_ds = torch.utils.data.TensorDataset(inputs,targets)
+len(torch_ds) # 1453
+
+train_ds_sz = int(round((len(torch_ds)*split_ratio[0])/100.0))
+test_ds_sz  = len(torch_ds) - train_ds_sz
+
+train_ds,test_ds = torch.utils.data.random_split(torch_ds,[train_ds_sz,test_ds_sz])
+len(train_ds),len(test_ds) # (1017, 436)
+
+train_dl = torch.utils.data.DataLoader(dataset = train_ds,batch_size=train_bs, shuffle = True)
+test_dl = torch.utils.data.DataLoader(dataset = test_ds,batch_size=2*train_bs)
+
+```
+
+## 7. Model Selection:
+
+Here I am using Linear regression model.
+```python
+class linearRegression(torch.nn.Module):
+    def __init__(self, inputSize, outputSize):
+        super(linearRegression, self).__init__()
+        self.linear = torch.nn.Linear(inputSize, outputSize)
+
+    def forward(self, x):
+        out = self.linear(x)
+        return out
+
+model = linearRegression(inputs.shape[1],targets.shape[1])
+```
+
+## 8. Hyper Parameters Optimization:
+```python
+#loss = torch.nn.L1Loss()
+loss = torch.nn.MSELoss()
+loss_Description = str(loss) # Its declared in Hyper Params section in top
+
+#opt  = torch.optim.SGD(model.parameters(),lr=lr)
+#opt  = torch.optim.SGD(model.parameters(),lr=lr,momentum=0.9)
+opt  = torch.optim.SGD(model.parameters(),lr=lr,momentum=0.9,nesterov=True) 
+optimizer_Description = str(opt)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=opt,mode='min',factor=0.1,patience=10,verbose=True)
+```
+
+## 9. Evaluation:
 
 
-
-
-
-
-
+## 10. Scoring:
