@@ -24,10 +24,10 @@ As a cricket fan I watch all the matches, during that time I observed that **"Po
 
 * only 2-fielders can stay outside the Inner-circle
   
-  ![powerplay_field](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/ppfield.JPG)
+  <img src="https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/ppfield.JPG" alt="powerplay_field" style="zoom:50%;" />
 * After powerplay, up to 5-fielders can stay outside inner circle & 4-fielders must remain inside the inner circle.
 
-    ![afterPowerplayField](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/no_ppfield.JPG)
+    <img src="https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/no_ppfield.JPG" alt="afterPowerplayField" style="zoom:50%;" />
 
 ## Effect &  Importance:
 Powerplay makes the batting comparatively easy. Also it's a trap for the batsmen, as this will get them to take into a risk and loose their wickets in 1<sup>st</sup> 6-overs.
@@ -37,7 +37,7 @@ So, these overs are considered as pillars of any teams  victory.  **75% - of win
 
 ## Steps of this blog are demonstrated in the below figure:
 
-![flowoftheblog](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/blogflow.JPG)
+<img src="https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/blogflow.JPG" alt="flowoftheblog" style="zoom: 50%;" />
 
 ## 1. Loading the Data Set: 
 Actually, this step is the data connection layer and for this very simple prototype, we will keep it simple and easy as loading a data set from [cricsheet](*https://cricsheet.org/downloads/ipl_male_csv.zip)
@@ -101,7 +101,7 @@ Which contains 200664 : rows , 22 : columns
 Prior to Analyze data, **"Data Processing"** is considered most important step, in creation of the Learning Model !  
 
 We can easily get tons of Data in form of various Datasets, but to make that data fit for deriving various insights from it, requires a lot of observation, modification, manipulation and numerous other steps. 
-![Data processing snippet](https://miro.medium.com/max/1400/1*vOugEJbcFMoO5qU6TAhpsw.jpeg)
+<img src="https://miro.medium.com/max/1400/1*vOugEJbcFMoO5qU6TAhpsw.jpeg" alt="Data processing snippet" style="zoom:70%;" />
 
 When we freshly download a Dataset for our project, the Data it contains is random(most of the time) i.e. not arranged or not filled in the way we need it to be.
 Sometimes, it might have `NULL Values, Unnecessary Features, Datatypes not in a proper format. etc…`
@@ -444,10 +444,28 @@ class linearRegression(torch.nn.Module):
         out = self.linear(x)
         return out
 
-model = linearRegression(inputs.shape[1],targets.shape[1])
+model = linearRegression(inputs.shape[1],targets.shape[1]) # (20,1)
 ```
 
 ## 8. Hyper Parameters Optimization:
+I tried many combinations with respect to LR,momentum,NAG, batch size and optimizers and schedulers to find the global minima.
+
+All the results are available at [record metrics](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/blob/main/Recorded_Metrics.csv)
+
+Out of all tests, Identified below Hyper Parameters gives better results:
+```
+1. Train vs Test Batch Sz : 32 & 64
+2. Loss : MSE Loss()
+3. Optimizer : "SGD (Parameter Group 0,
+                        dampening: 0,
+                        lr: 0.1,
+                        momentum: 0.9,
+                        nesterov: True,
+                        weight_decay: 0
+                    )"
+4. Minimum Train Loss "0.0061" observed in 36th epoch (can see in below graph)
+```
+
 ```python
 #loss = torch.nn.L1Loss()
 loss = torch.nn.MSELoss()
@@ -460,7 +478,38 @@ optimizer_Description = str(opt)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=opt,mode='min',factor=0.1,patience=10,verbose=True)
 ```
 
-## 9. Evaluation:
 
+
+## 9. Evaluation:
+![Train vs Test Loss](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/snippets/v2_test15.png)
 
 ## 10. Scoring:
+Lets see the predicted values of the model on test data:
+```python
+
+predicted_values = []
+actual_values = []
+for input,output in test_dl:
+    for row in input:
+        pred     = (loaded_model(torch.Tensor(row))*(encode_data['Total_score_max'] - encode_data['Total_score_min'] )) + encode_data['Total_score_min']
+        predicted_values.append(pred)
+    for op in output:
+        actual    = (op*(encode_data['Total_score_max'] - encode_data['Total_score_min'] )) + encode_data['Total_score_min']
+        actual_values.append(actual)
+    break
+```
+```python
+predicted_values[:5]
+    [tensor([46.3414], grad_fn=<AddBackward0>),
+    tensor([30.7063], grad_fn=<AddBackward0>),
+    tensor([47.4587], grad_fn=<AddBackward0>),
+    tensor([51.6460], grad_fn=<AddBackward0>),
+    tensor([47.1634], grad_fn=<AddBackward0>)]
+
+actual_values[:5]
+    [tensor([49.]), 
+    tensor([27.]), 
+    tensor([64.]), 
+    tensor([66.]), 
+    tensor([64.])]
+```
