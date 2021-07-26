@@ -13,7 +13,7 @@ You want to Predict Score? [Click Here](https://suman-projects.s3.ap-south-1.ama
 **Disclaimer:** The analysis and prediction done here is for learning purpose only and should not be used for any illegal activities such as betting.
 
 ## Project Demo
-{% youtube Tq91-A5_k3k %}
+![demo](https://github.com/sumankanukollu/cricket_scorePredict_in_first6_overs/raw/main/Inference_Recoding.gif)
 
 
 ## Introduction: 
